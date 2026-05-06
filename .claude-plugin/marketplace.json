@@ -1,0 +1,12 @@
+{
+  "name": "padosol",
+  "owner": { "name": "padosol", "email": "metapick.me@gmail.com" },
+  "plugins": [
+    {
+      "name": "orch",
+      "source": { "source": "github", "repo": "padosol/orchestration-plugin" },
+      "description": "tmux 멀티 워커 오케스트레이션 (leader/worker hub-and-spoke)",
+      "version": "0.1.0"
+    }
+  ]
+}
