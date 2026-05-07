@@ -45,6 +45,13 @@
       "category": "workflow",
       "version": "0.1.0",
       "source": "./plugins/github-flow"
+    },
+    {
+      "name": "token-tracker",
+      "description": "현재 Claude Code 세션 transcript JSONL 을 파싱해 모델별 토큰 사용량과 추정 비용을 정확히 집계. /track-tokens 가 보고서·세션 종료 시 markdown/JSON 요약을 산출해 simplify-save·ai-ready-audit 등이 정확한 사용량 섹션을 붙일 수 있게 한다.",
+      "category": "analysis",
+      "version": "0.1.0",
+      "source": "./plugins/token-tracker"
     }
   ]
 }

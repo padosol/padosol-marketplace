@@ -1,0 +1,8 @@
+{
+  "name": "token-tracker",
+  "description": "현재 Claude Code 세션 transcript JSONL 을 파싱해 모델별 토큰 사용량 (input / output / cache_read / cache_creation) 과 추정 비용을 정확히 집계. /track-tokens 가 보고서 작성 / 세션 종료 시점에 markdown 또는 JSON 요약을 산출해 simplify-save·ai-ready-audit 등 다른 보고서 스킬이 정확한 사용량 섹션을 붙일 수 있게 한다.",
+  "version": "0.1.0",
+  "author": {
+    "name": "padosol"
+  }
+}
