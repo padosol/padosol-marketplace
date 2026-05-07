@@ -46,10 +46,27 @@ git log --oneline -10
 | `feat` | 새 클래스/메서드/엔드포인트/테이블 추가, 새 기능 도입 |
 | `fix` | 예외 처리 보강, NPE 방지, 잘못된 로직 교정, 테스트 실패 해결 |
 | `refactor` | 동작 변화 없이 구조만 변경 (이름 변경, 메서드 추출, 패키지 이동) |
-| `docs` | `.md`, Javadoc, 주석만 변경 |
-| `chore` | 빌드 스크립트, `.gitignore`, 의존성, CI 설정 |
+| `docs` | `.md`, Javadoc, 주석만 변경 (단, 빌드/CI/의존 관련 산출물은 `chore`) |
+| `chore` | 코드 영향 없는 산출물·도구·인프라 변경 — 아래 chore 자동 추론 규칙 참조 |
+| `test` | 테스트 코드만 추가/수정 |
 
-여러 성격이 섞여 있으면 가장 큰 덩어리 기준으로 고르고, 애매하면 `chore`. 그리고 가능하면 커밋/브랜치 분리를 권장하는 안내를 함께 남긴다.
+#### chore 자동 추론 규칙
+
+변경 파일이 모두 다음 중 하나에 해당하면 `chore` 로 자동 분류한다 (사용자에게 되묻지 않음):
+
+- audit 산출물 디렉토리: `.ai-ready-audit/**`, `audit-output/**` 등 도구 산출 디렉토리
+- 의존성 lockfile / manifest 의 의존성 항목만 변경: `package.json` (deps/devDeps 만), `pnpm-lock.yaml`, `yarn.lock`, `package-lock.json`, `gradle/libs.versions.toml`, `build.gradle.kts` 의 dependencies 블록
+- CI 설정: `.github/workflows/*.yml`, `.github/dependabot.yml`, `.gitlab-ci.yml`, `Jenkinsfile`
+- lint / format 설정: `eslint.config.*`, `.eslintrc*`, `.prettierrc*`, `tsconfig*.json` (compilerOptions 만), `ktlint.gradle`, `.editorconfig`
+- 빌드/배포 스크립트: `Dockerfile`, `docker-compose*.yml`, `Makefile`, 루트 `*.sh` (도구 스크립트)
+- 메타: `.gitignore`, `.gitattributes`, `.github/CODEOWNERS`
+
+#### 우선순위 규칙
+
+- **코드 파일 (`*.ts/*.tsx/*.js/*.kt/*.java/*.py/*.go` 등) 이 1줄이라도 포함되면 `chore` 가 아니다.** 코드 변경 성격에 따라 `feat` / `fix` / `refactor` 중에서 고른다.
+- **테스트 코드 (`**/__tests__/**`, `**/*.test.*`, `src/test/**`) 만 변경되면 `test`.**
+- **`.md` 만 변경 + 위 chore 규칙에도 안 걸리면 `docs`.**
+- 여러 성격이 섞여 있으면 가장 큰 덩어리 기준으로 고르고, 애매하면 `chore`. 그리고 가능하면 커밋/브랜치 분리를 권장하는 안내를 함께 남긴다.
 
 #### 3-2. kebab-case 설명 생성
 
@@ -75,6 +92,7 @@ git log --oneline -10
 | `refactor`| `refactor` |
 | `docs`    | `docs` |
 | `chore`   | `chore` |
+| `test`    | `test` |
 
 예시:
 - `feature/MP-XXX-duo-post-api`
