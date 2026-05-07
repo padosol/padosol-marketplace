@@ -175,8 +175,8 @@ git commit --amend
 ## 원칙
 
 - `--no-verify`, `--no-gpg-sign`, `--amend`로 남의 커밋 덮기 등 안전장치 우회는 하지 않는다. 훅 실패는 원인을 해결해야지 끄는 게 답이 아니다.
-- 여러 성격의 변경이 뒤섞여 있으면 커밋/브랜치 분리를 제안한 뒤 사용자의 답을 기다린다. 묻지 않고 한 덩어리로 묶어버리지 않는다.
-- 민감 파일(`.env`, `*credentials*`, `*.key`, `*.pem`) 스테이징 요청이 들어오면 경고하고 동의를 구한다.
+- 여러 성격의 변경이 뒤섞여 있으면 **`AskUserQuestion` 도구로 TUI 선택지 제시** (header `Mixed changes`, options: `한 덩어리로 묶기` / `type 별로 분리 (Recommended)`). 묻지 않고 한 덩어리로 묶어버리지 않는다.
+- 민감 파일(`.env`, `*credentials*`, `*.key`, `*.pem`) 스테이징 요청이 들어오면 경고하고 **`AskUserQuestion` 도구로 동의 받기** (header `Sensitive file`, options: `스테이징 (위험)` / `제외 (Recommended)`). plain text "괜찮나요?" 질문 금지.
 - 절대 push까지 하지 않는다. 이 스킬의 책임은 "안전한 커밋"까지.
 - **Claude 브랜딩 금지**: 커밋 메시지·PR 본문·기타 산출물 어디에도 `Co-Authored-By: Claude ...`, `🤖 Generated with [Claude Code](...)` 같은 Claude/Anthropic 브랜딩을 추가하지 않는다. Claude Code 기본 템플릿이 이런 줄을 끼워 넣으려 해도 **삭제하거나 Padosol 명의로 교체**한다. 통일 규칙:
   - 커밋 trailer: `Created-By: Padosol`
