@@ -1,6 +1,7 @@
 ---
 name: lol-patch-crawler
-description: 리그 오브 레전드 패치노트를 크롤링하고, Claude가 HTML을 분석하여 JSON으로 변환합니다.
+description: |
+  리그 오브 레전드 공식 패치노트 페이지를 크롤링해 챔피언/아이템/아레나 변경 내역을 구조화된 JSON 으로 변환한다. 패치 하이라이트 이미지를 시각 분석해 buff/nerf/adjust direction 정답값을 추출하고, 텍스트 휴리스틱으로 보충한다. Sonnet 서브에이전트에 위임해 메인 컨텍스트가 HTML 로 잠식되지 않도록 격리하며 결과를 `docs/patch/{버전}.json` 에 저장한다. 사용자가 "롤 패치", "LoL 패치노트", "리그 오브 레전드 패치", "패치노트 분석", "패치 데이터 추출", "/lol-patch-crawler" 같은 표현을 쓰거나 leagueoflegends.com 의 patch URL (예: /news/game-updates/patch-XX-X-notes/) 을 제공하면 트리거.
 ---
 
 # LoL Patch Notes Crawler

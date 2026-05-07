@@ -1,6 +1,7 @@
 ---
 name: safe-commit
-description: main 또는 develop 브랜치에 직접 커밋되는 사고를 막고, 변경 내용을 분석해 프로젝트 브랜치 컨벤션(`<type>/MP-<번호>-<kebab-설명>`)에 맞는 새 브랜치를 자동 생성한 뒤 커밋한다. 모든 커밋 메시지에 `Created-By: Padosol` trailer를 추가한다. 사용자가 "커밋해줘", "commit", "git commit", "변경 사항 저장" 등을 요청하면 반드시 이 스킬을 먼저 사용하고, 단순히 `git commit` Bash를 즉시 실행하지 말 것. 특히 현재 브랜치가 보호된 브랜치(main/develop)일 때 반드시 트리거되어야 한다. Claude Code의 commit-commands:commit을 대체/확장하는 용도.
+description: |
+  main 또는 develop 브랜치에 직접 커밋되는 사고를 막고, 변경 내용을 분석해 프로젝트 브랜치 컨벤션 (type/MP-번호-kebab-설명) 에 맞는 새 브랜치를 자동 생성한 뒤 커밋한다. 모든 커밋 메시지에 `Created-By: Padosol` trailer 를 추가한다. 사용자가 "커밋해줘", "commit", "git commit", "변경 사항 저장" 등을 요청하면 반드시 이 스킬을 먼저 사용하고, 단순히 `git commit` Bash 를 즉시 실행하지 말 것. 특히 현재 브랜치가 보호된 브랜치(main/develop)일 때 반드시 트리거되어야 한다. Claude Code 의 commit-commands:commit 을 대체/확장하는 용도.
 ---
 
 # safe-commit
