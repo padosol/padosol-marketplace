@@ -1,0 +1,8 @@
+{
+  "name": "safe-commit",
+  "description": "main/develop 브랜치 직접 커밋 사고 방지, 변경 내용 분석 후 feat/fix/... + MP-XXX kebab 브랜치 자동 생성, Created-By: Padosol trailer 부착.",
+  "version": "0.1.0",
+  "author": {
+    "name": "padosol"
+  }
+}

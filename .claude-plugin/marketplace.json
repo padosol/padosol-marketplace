@@ -1,12 +1,50 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "padosol",
+  "description": "padosol의 Claude Code plugin marketplace.",
   "owner": { "name": "padosol", "email": "metapick.me@gmail.com" },
   "plugins": [
     {
       "name": "orch",
-      "source": { "source": "github", "repo": "padosol/orchestration-plugin" },
-      "description": "tmux 멀티 워커 오케스트레이션 (leader/worker hub-and-spoke)",
-      "version": "0.1.0"
+      "description": "tmux 기반 멀티 세션 오케스트레이션. 한 사용자가 orch 윈도우에서 운전하고, 워커 세션들이 파일 메일박스로 메시지를 주고받는다 (leader/worker hub-and-spoke).",
+      "category": "workflow",
+      "version": "0.1.0",
+      "source": { "source": "github", "repo": "padosol/orchestration-plugin" }
+    },
+    {
+      "name": "ai-ready-audit",
+      "description": "임의의 git 리포지토리를 AI-Ready 루브릭(100점, 7 카테고리)으로 감사하고 JSON 점수표 + 한국어 HTML 대시보드 + ROI 액션 리스트를 산출한다.",
+      "category": "analysis",
+      "version": "0.1.0",
+      "source": "./plugins/ai-ready-audit"
+    },
+    {
+      "name": "safe-commit",
+      "description": "main/develop 브랜치 직접 커밋 사고 방지, 변경 내용 분석 후 feat/fix/... + MP-XXX kebab 브랜치 자동 생성, Created-By: Padosol trailer 부착.",
+      "category": "workflow",
+      "version": "0.1.0",
+      "source": "./plugins/safe-commit"
+    },
+    {
+      "name": "simplify-save",
+      "description": "변경된 코드를 재사용성·품질·효율 관점으로 리뷰하고 docs/simplify 등에 보고서로 저장.",
+      "category": "workflow",
+      "version": "0.1.0",
+      "source": "./plugins/simplify-save"
+    },
+    {
+      "name": "lol-patch-crawler",
+      "description": "리그 오브 레전드 공식 패치노트 페이지를 크롤링해 정제된 HTML을 추출하고, Sonnet 서브에이전트가 분석하여 docs/patch/{버전}.json으로 변환한다.",
+      "category": "data",
+      "version": "0.1.0",
+      "source": "./plugins/lol-patch-crawler"
+    },
+    {
+      "name": "github-flow",
+      "description": "PR 라이프사이클 자동화. /open-pr 가 PR 생성 (Linear MP 키 + Closes 매직워드) 후 /await-merge 로 chain — 머지 시까지 60s 폴링 → develop 이동·pull·로컬 브랜치 삭제까지 자동.",
+      "category": "workflow",
+      "version": "0.1.0",
+      "source": "./plugins/github-flow"
     }
   ]
 }

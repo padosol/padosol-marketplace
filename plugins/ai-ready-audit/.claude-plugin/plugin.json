@@ -1,0 +1,8 @@
+{
+  "name": "ai-ready-audit",
+  "description": "임의의 git 리포지토리를 100점 AI-Ready 루브릭(7 카테고리)으로 감사하고, JSON 점수표 + 한국어 HTML 대시보드 + ROI 액션 리스트를 산출한다.",
+  "version": "0.1.0",
+  "author": {
+    "name": "padosol"
+  }
+}

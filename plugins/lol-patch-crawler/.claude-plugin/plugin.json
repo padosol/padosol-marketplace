@@ -1,0 +1,8 @@
+{
+  "name": "lol-patch-crawler",
+  "description": "리그 오브 레전드 공식 패치노트 페이지를 크롤링해 정제된 HTML을 추출하고, Sonnet 서브에이전트가 분석하여 docs/patch/{버전}.json으로 변환한다.",
+  "version": "0.1.0",
+  "author": {
+    "name": "padosol"
+  }
+}
