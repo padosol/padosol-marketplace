@@ -53,7 +53,7 @@ description: |
 PR_INFO=$(gh pr view <PR#> --json number,state,headRefName)
 ```
 
-- `state` 가 `OPEN` 이 아니면 사용자에게 알리고 중단 (CLOSED/MERGED 에 코멘트 다는 건 의미 없음, 사용자 확인 후에만)
+- `state` 가 `OPEN` 이 아니면 자동 진행 금지. **`AskUserQuestion` 도구로 TUI 선택지 제시** — header `Non-OPEN PR`, options: `그래도 게시 (Recommended)` / `중단` / `다른 PR 지정`. 사용자가 "다른 PR 지정" 을 고르면 새 PR 번호를 자유 입력으로 받아 1단계부터 다시. plain text 질문 금지.
 - 보고서 파일 size 가 0 이면 중단
 
 ### 3. 코멘트 본문 조립
