@@ -41,7 +41,7 @@
     },
     {
       "name": "github-flow",
-      "description": "PR 라이프사이클 자동화. /open-pr 가 PR 생성 (Linear MP 키 + Closes 매직워드) 후 /await-merge 로 chain — 머지 시까지 60s 폴링 → develop 이동·pull·로컬 브랜치 삭제까지 자동.",
+      "description": "PR 라이프사이클 자동화. /open-pr (PR 생성 + Linear MP 키 + Closes), /post-review (코드 리뷰 보고서를 PR 코멘트로 idempotent 게시), /await-merge (머지 폴링 + cleanup chain).",
       "category": "workflow",
       "version": "0.1.0",
       "source": "./plugins/github-flow"

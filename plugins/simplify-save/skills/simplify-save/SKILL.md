@@ -129,3 +129,5 @@ Use this template:
 ### After saving
 
 Confirm to the user: the report path, the number of findings (fixed vs skipped), and build status.
+
+If the work is happening on a feature branch with an open PR and the user wants the review visible on GitHub, suggest chaining `/post-review` (github-flow plugin) — it posts the saved report as a PR comment, idempotent on re-run.
