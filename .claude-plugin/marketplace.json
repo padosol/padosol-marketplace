@@ -43,7 +43,7 @@
       "name": "github-flow",
       "description": "PR 라이프사이클 자동화. /open-pr (PR 생성 + Linear MP 키 + Closes), /post-review (코드 리뷰 보고서를 PR 코멘트로 idempotent 게시), /await-merge (머지 폴링 + cleanup chain).",
       "category": "workflow",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "source": "./plugins/github-flow"
     },
     {
