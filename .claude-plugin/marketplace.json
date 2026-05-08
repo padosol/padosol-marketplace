@@ -8,7 +8,7 @@
       "name": "orch",
       "description": "tmux 기반 멀티 세션 오케스트레이션. 한 사용자가 orch 윈도우에서 운전하고, 워커 세션들이 파일 메일박스로 메시지를 주고받는다 (leader/worker hub-and-spoke).",
       "category": "workflow",
-      "version": "0.6.2",
+      "version": "0.7.0",
       "source": { "source": "github", "repo": "padosol/orchestration-plugin" }
     },
     {
