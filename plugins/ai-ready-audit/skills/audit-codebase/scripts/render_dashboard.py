@@ -67,32 +67,45 @@ def render_category_cards(rubric: dict, scorecard: dict) -> str:
         score = int(sc.get("score", 0))
         max_p = cat["points"]
         ratio = score / max_p if max_p else 0
+        pct = round(ratio * 100)
         reason = sc.get("reason", "")
 
-        # subitems 표시
         sub_html = ""
         if cat.get("scoring_type") == "subitems":
-            rows = []
+            chips = []
             for it in cat["items"]:
                 isc = sc.get("items", {}).get(it["id"], {})
                 isc_v = int(isc.get("score", 0))
-                rows.append(
-                    f'<tr><td><strong>{it["id"]}</strong> {html_escape(it["name"])}</td>'
-                    f'<td style="text-align:right">{isc_v}/{it["points"]}</td></tr>'
+                max_it = it["points"]
+                if isc_v >= max_it and max_it > 0:
+                    chip_class = "subitem-chip subitem-full"
+                elif isc_v == 0:
+                    chip_class = "subitem-chip subitem-zero"
+                else:
+                    chip_class = "subitem-chip"
+                chips.append(
+                    f'<div class="{chip_class}">'
+                    f'<span class="subitem-id">{it["id"]}</span>'
+                    f'<span class="subitem-name">{html_escape(it["name"])}</span>'
+                    f'<span class="subitem-score">{isc_v}/{max_it}</span>'
+                    f'</div>'
                 )
-            sub_html = (
-                '<table style="margin-top:12px; font-size:13px;">'
-                + "".join(rows) + "</table>"
-            )
+            sub_html = '<div class="subitem-grid">' + "".join(chips) + "</div>"
+
+        # 만점 항목은 reason 생략 (노이즈 감소)
+        show_reason = reason and ratio < 1
+        reason_html = (
+            f'<div class="reason">{html_escape(reason)}</div>' if show_reason else ''
+        )
 
         parts.append(f"""
 <div class="cat-card">
   <div class="cat-id">{cid}</div>
   <h3>{html_escape(cat["name"])}</h3>
-  <div class="scoreline"><span class="score">{score}</span><span class="max">/{max_p}</span></div>
+  <div class="scoreline"><span class="score">{score}</span><span class="max">/{max_p}</span><span class="score-pct">({pct}%)</span></div>
   <div class="bar {bar_class(ratio)}"><div style="width:{ratio*100:.0f}%"></div></div>
   <div class="desc">{html_escape(cat["what_it_measures"])}</div>
-  {f'<div class="reason">{html_escape(reason)}</div>' if reason else ''}
+  {reason_html}
   {sub_html}
 </div>
 """)
@@ -151,21 +164,27 @@ def compute_roi(rubric: dict, scorecard: dict) -> list[RoiItem]:
     return out
 
 
-def render_roi_rows(roi: list[RoiItem]) -> str:
-    rows = []
+def render_roi_cards(roi: list[RoiItem]) -> str:
+    if not roi:
+        return '<div class="muted" style="text-align:center; padding:24px;">모든 항목 만점입니다.</div>'
+    cards = []
     for item in roi:
-        rows.append(f"""
-<tr>
-  <td><span class="roi-rank">{item.rank}</span></td>
-  <td>{html_escape(item.label)}</td>
-  <td>{item.current}</td>
-  <td>{item.max_p}</td>
-  <td><strong>+{item.gap}</strong></td>
-  <td class="effort-{item.effort}">{item.effort}</td>
-  <td>{html_escape(item.action_hint)}</td>
-</tr>
+        cards.append(f"""
+<div class="roi-card">
+  <div class="roi-card-head">
+    <span class="roi-rank">{item.rank}</span>
+    <span class="roi-label">{html_escape(item.label)}</span>
+    <span class="roi-current">현재 {item.current}/{item.max_p}</span>
+    <span class="roi-gap">+{item.gap}점</span>
+    <span class="roi-effort effort-{item.effort}">{item.effort}</span>
+  </div>
+  <details>
+    <summary>권장 액션</summary>
+    <div class="roi-action">{html_escape(item.action_hint)}</div>
+  </details>
+</div>
 """)
-    return "\n".join(rows) if rows else "<tr><td colspan='7' class='muted' style='text-align:center;'>모든 항목 만점입니다 🎉</td></tr>"
+    return "\n".join(cards)
 
 
 def render_broken_refs_section(signals: dict) -> str:
@@ -173,15 +192,18 @@ def render_broken_refs_section(signals: dict) -> str:
     n = signals.get("broken_path_refs_in_docs", 0)
     if not refs:
         return ""
-    items = "".join(f'<li><code>{html_escape(r["doc"])}</code> → <code>{html_escape(r["ref"])}</code></li>' for r in refs[:30])
+    items = "".join(
+        f'<li><code>{html_escape(r["doc"])}</code> → <code>{html_escape(r["ref"])}</code></li>'
+        for r in refs[:30]
+    )
     return f"""
-<h2>문서 내 의심 참조 ({n}건)</h2>
-<div class="warn-box">
-  context 문서에서 백틱/링크로 참조된 경로 중 audit이 실제로 찾지 못한 항목입니다.
-  실제로는 깊은 경로에 존재할 수 있으니 <strong>샘플링 검증 필수</strong>.
-  (E1. Reference Accuracy 점수에 영향)
-</div>
-<ul class="ref-list">{items}</ul>
+<details class="broken-refs-warn" open>
+  <summary>문서 내 의심 broken refs · {n}건 (E1. Reference Accuracy 영향)</summary>
+  <div class="broken-refs-body">
+    <p style="margin: 4px 0 10px;">context 문서의 백틱/링크 참조 중 audit 가 실제로 찾지 못한 항목. 깊은 경로에 존재할 수 있으니 <strong>샘플링 검증 필수</strong>.</p>
+    <ul style="font-family: 'Menlo', 'Consolas', monospace; font-size: 12px; color: var(--muted); margin: 0; padding-left: 20px;">{items}</ul>
+  </div>
+</details>
 """
 
 
@@ -226,7 +248,7 @@ def main() -> int:
         "NAV_COVERAGE_PCT": str(nav_pct),
         "BROKEN_REF_COUNT": str(signals.get("broken_path_refs_in_docs", "?")),
         "CATEGORY_CARDS": render_category_cards(rubric, scorecard),
-        "ROI_ROWS": render_roi_rows(roi),
+        "ROI_CARDS": render_roi_cards(roi),
         "BROKEN_REFS_SECTION": render_broken_refs_section(signals),
         "RUBRIC_VERSION": rubric.get("version", "?"),
         "SCORECARD_PATH": args.scorecard,

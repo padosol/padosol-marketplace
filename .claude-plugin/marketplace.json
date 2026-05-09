@@ -15,7 +15,7 @@
       "name": "ai-ready-audit",
       "description": "임의의 git 리포지토리를 AI-Ready 루브릭(100점, 7 카테고리)으로 감사하고 JSON 점수표 + 한국어 HTML 대시보드 + ROI 액션 리스트를 산출한다.",
       "category": "analysis",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "source": "./plugins/ai-ready-audit"
     },
     {
@@ -29,7 +29,7 @@
       "name": "simplify-save",
       "description": "변경된 코드를 재사용성·품질·효율 관점으로 리뷰하고 docs/simplify 등에 보고서로 저장.",
       "category": "workflow",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "source": "./plugins/simplify-save"
     },
     {
@@ -43,7 +43,7 @@
       "name": "github-flow",
       "description": "PR 라이프사이클 자동화. /open-pr (PR 생성 + Linear MP 키 + Closes), /post-review (코드 리뷰 보고서를 PR 코멘트로 idempotent 게시), /await-merge (머지 폴링 + cleanup chain).",
       "category": "workflow",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "source": "./plugins/github-flow"
     },
     {
