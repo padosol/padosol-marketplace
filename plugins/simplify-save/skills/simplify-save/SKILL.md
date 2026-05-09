@@ -59,7 +59,7 @@ Review the same changes for efficiency:
 
 Wait for all three agents to complete. Aggregate their findings and fix each issue directly. If a finding is a false positive or not worth addressing, note it and move on — do not argue with the finding, just skip it.
 
-Track each finding in a structured list with: category (reuse/quality/efficiency), description, severity, and action taken (fixed/skipped with reason).
+Track each finding in a structured list with: category (reuse/quality/efficiency), short item name, description (what/why), severity (Quality/Efficiency only — High/Medium/Low), action taken (Fixed / Skip with reason), and optional before/after diff snippet (3~10 lines) for fixed code changes.
 
 ## Phase 3.5: Verify Build
 
@@ -77,6 +77,8 @@ After fixes are applied and verified, save the review report as a markdown file.
 
 ### Report structure
 
+Findings are rendered as scannable cards (no per-section tables). 모든 finding 은 단일 `## Findings` 섹션 아래 카테고리/심각도/상태가 H3 헤더에 인라인으로 노출되어, 표 cell wrap 없이 본문 (What / Why / Action) 이 자연스럽게 흐른다.
+
 Use this template:
 
 ```markdown
@@ -84,47 +86,53 @@ Use this template:
 
 **Date:** <YYYY-MM-DD>
 **Target:** <brief description of what changed>
+**Issues:** <N> reuse · <M> quality · <K> efficiency · **Build:** <BUILD SUCCESSFUL / FAILED>
 
 ---
 
-## 1. Code Reuse Review
+## Findings
 
-### Findings
+### #1 · Reuse · <Item Name> · **Fixed**
 
-| # | Item | Action |
-|---|------|--------|
-| 1 | <description> | **Fixed** / **Skip** — <reason> |
+- **What:** <one-line description of the duplication / missed utility>
+- **Why:** <why it matters — maintenance cost, drift risk, etc.>
+- **Action:** <concretely what was done — replaced X with util Y>
 
----
+```diff
+- old hand-rolled code
++ replaced with shared util
+```
 
-## 2. Code Quality Review
+### #2 · Quality [H] · <Item Name> · **Skip**
 
-### Findings
+- **What:** <one-line description>
+- **Why:** <why it matters>
+- **Action:** Skip — <specific reason, e.g., "out of scope for this change", "false positive: caller already validates">
 
-| # | Item | Severity | Action |
-|---|------|----------|--------|
-| 1 | <description> | High/Medium/Low | **Fixed** / **Skip** — <reason> |
+### #3 · Efficiency [M] · <Item Name> · **Fixed**
 
----
-
-## 3. Efficiency Review
-
-### Findings
-
-| # | Item | Impact | Action |
-|---|------|--------|--------|
-| 1 | <description> | High/Medium/Low/Negligible | **Fixed** / **Skip** — <reason> |
+- **What:** <one-line description>
+- **Why:** <impact — hot path, N+1, memory>
+- **Action:** <what was done>
 
 ---
 
 ## Summary
 
-| File | Change |
-|------|--------|
-| <file path> | <what was changed> |
-
-**Build result:** <BUILD SUCCESSFUL / FAILED>
+- `<file path>` — <what was changed>
+- `<file path>` — <what was changed>
 ```
+
+H3 헤더 규칙:
+- `### #<N> · <Category>[ [<Severity>]] · <Item Name> · **<Status>**`
+- Category: `Reuse` / `Quality` / `Efficiency` (필수)
+- Severity 인라인 라벨 `[H]` / `[M]` / `[L]` — Quality / Efficiency 만 (Reuse 는 생략)
+- Status: `**Fixed**` 또는 `**Skip**` (마지막에 항상 위치)
+
+본문 규칙:
+- 항상 3개 bullet: `**What:**` / `**Why:**` / `**Action:**` (순서 고정)
+- Fixed 항목 중 코드 변경이 있는 경우 H3 카드 끝에 ` ```diff ` snippet 3~10 lines 첨부 (Before/After 명시). 설정/문서만 변경이면 생략 가능
+- Skip 의 Action 은 `Skip — <구체적 이유>` 형태 (단순 "Skip" 금지)
 
 ### After saving
 
