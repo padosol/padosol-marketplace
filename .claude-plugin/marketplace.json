@@ -8,7 +8,7 @@
       "name": "orch",
       "description": "tmux 멀티 세션 오케스트레이션. leader_id 는 사용자가 /orch:issue-up 에 넘긴 트래커 키 그대로 ([A-Za-z0-9_-]+, 대소문자 보존). leader 가 작업 타입 (feature/bug/refactor) 을 자동 추론 → 타입별 워크플로우 가이드 기반 phase plan 작성 → orch 가 AskUserQuestion TUI (GO/수정/취소) 로 사용자 컨펌 받은 뒤 순차 실행. 워커는 wait-reply.sh 로 leader 답 차단 대기, reviewer 도 같은 타입 가이드 적용. /orch:setup 이 issue_tracker(linear|jira|github|gitlab|none) + git_host(github|gitlab|none) + notify(on|off) 를 AskUserQuestion TUI 로 일괄 수집, 네 트래커 모두 자동 fetch.",
       "category": "workflow",
-      "version": "0.15.0",
+      "version": "0.15.1",
       "source": { "source": "github", "repo": "padosol/orchestration-plugin" }
     },
     {
