@@ -6,9 +6,9 @@
   "plugins": [
     {
       "name": "orch",
-      "description": "tmux 멀티 세션 오케스트레이션. leader_id 는 사용자가 /orch:issue-up 에 넘긴 트래커 키 그대로 ([A-Za-z0-9_-]+, 대소문자 보존 — Linear MP-13 / Jira PROJ-456 / GitHub 142 / 자유 issue42). leader 가 phase plan (.orch/runs/<id>/phases.md) 을 사용자 컨펌 받아 순차 실행, 워커는 wait-reply.sh 로 leader 답을 차단 대기. /orch:setup 이 issue_tracker(linear|jira|github|gitlab|none) + git_host(github|gitlab|none) + notify(on|off) 를 AskUserQuestion TUI 로 일괄 수집.",
+      "description": "tmux 멀티 세션 오케스트레이션. leader_id 는 사용자가 /orch:issue-up 에 넘긴 트래커 키 그대로 ([A-Za-z0-9_-]+, 대소문자 보존). leader 가 phase plan (.orch/runs/<id>/phases.md) 을 사용자 컨펌 받아 순차 실행, 워커는 wait-reply.sh 로 leader 답을 차단 대기. /orch:setup 이 issue_tracker(linear|jira|github|gitlab|none) + git_host(github|gitlab|none) + notify(on|off) 를 AskUserQuestion TUI 로 일괄 수집, 네 트래커 모두 자동 fetch.",
       "category": "workflow",
-      "version": "0.13.0",
+      "version": "0.14.0",
       "source": { "source": "github", "repo": "padosol/orchestration-plugin" }
     },
     {
@@ -41,9 +41,9 @@
     },
     {
       "name": "github-flow",
-      "description": "PR 라이프사이클 자동화. /open-pr (PR 생성 + Linear MP 키 + Closes), /post-review (코드 리뷰 보고서를 PR 코멘트로 idempotent 게시), /await-merge (머지 폴링 + orch settings 의 프로젝트별 default_base_branch 로 cleanup chain).",
+      "description": "PR/MR 라이프사이클 자동화 (GitHub + GitLab 지원). /open-pr 가 host 자동 감지 → PR/MR 생성 + Linear MP 키 + Closes, /post-review 가 코드 리뷰 보고서를 PR/MR 코멘트로 idempotent 게시, /await-merge 가 머지 폴링 + orch settings 의 프로젝트별 default_base_branch 로 cleanup.",
       "category": "workflow",
-      "version": "0.1.4",
+      "version": "0.2.0",
       "source": "./plugins/github-flow"
     },
     {
