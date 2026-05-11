@@ -6,9 +6,9 @@
   "plugins": [
     {
       "name": "orch",
-      "description": "tmux 기반 멀티 세션 오케스트레이션. 한 사용자가 orch 윈도우에서 운전하고, 워커 세션들이 파일 메일박스로 메시지를 주고받는다 (leader/worker hub-and-spoke).",
+      "description": "tmux 멀티 세션 오케스트레이션. leader 가 phase plan (.orch/runs/<mp>/phases.md) 을 사용자 컨펌 받아 순차 실행, 워커는 wait-reply.sh 로 leader 답을 차단 대기 — 비-blocking 동시 진행으로 순서 꼬이는 사고 방지. validate-harness SessionStart hook 으로 settings.json 누락 키 자동 검출.",
       "category": "workflow",
-      "version": "0.8.6",
+      "version": "0.9.0",
       "source": { "source": "github", "repo": "padosol/orchestration-plugin" }
     },
     {
