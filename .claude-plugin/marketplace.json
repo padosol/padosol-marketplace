@@ -41,9 +41,9 @@
     },
     {
       "name": "github-flow",
-      "description": "PR 라이프사이클 자동화. /open-pr (PR 생성 + Linear MP 키 + Closes), /post-review (코드 리뷰 보고서를 PR 코멘트로 idempotent 게시), /await-merge (머지 폴링 + default 브랜치 동적 조회 후 cleanup chain).",
+      "description": "PR 라이프사이클 자동화. /open-pr (PR 생성 + Linear MP 키 + Closes), /post-review (코드 리뷰 보고서를 PR 코멘트로 idempotent 게시), /await-merge (머지 폴링 + orch settings 의 프로젝트별 default_base_branch 로 cleanup chain).",
       "category": "workflow",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "source": "./plugins/github-flow"
     },
     {

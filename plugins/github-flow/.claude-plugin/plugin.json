@@ -1,7 +1,7 @@
 {
   "name": "github-flow",
-  "description": "PR 라이프사이클 자동화. /open-pr 가 PR 생성 + Linear MP 키 + Closes 매직워드를 한 번에 처리하고, /post-review 가 simplify-save 등의 코드 리뷰 보고서를 PR 코멘트로 게시 (마커 기반 idempotent update), /await-merge 가 머지될 때까지 폴링한 뒤 default 브랜치(gh 동적 조회) 로 이동·pull·로컬 브랜치 삭제까지 수행. GitHub authenticated rate limit (5000/hr) 안에서 60s 보수 폴링.",
-  "version": "0.1.3",
+  "description": "PR 라이프사이클 자동화. /open-pr 가 PR 생성 + Linear MP 키 + Closes 매직워드를 한 번에 처리하고, /post-review 가 simplify-save 등의 코드 리뷰 보고서를 PR 코멘트로 게시 (마커 기반 idempotent update), /await-merge 가 머지될 때까지 폴링한 뒤 orch settings 의 projects.<alias>.default_base_branch 기반(orch 외부는 gh fallback)으로 이동·pull·로컬 브랜치 삭제까지 수행. GitHub authenticated rate limit (5000/hr) 안에서 60s 보수 폴링.",
+  "version": "0.1.4",
   "author": {
     "name": "padosol"
   }

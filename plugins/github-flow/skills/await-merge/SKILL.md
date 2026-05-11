@@ -93,19 +93,49 @@ Monitor 알림 받으면:
 
 #### `PR_MERGED`
 
-1. **default 브랜치 동적 조회 (하드코딩 금지)**:
+1. **base 브랜치 결정 — orch settings 의 프로젝트별 값 우선**:
+
+   진실의 원천은 `.orch/settings.json` 의 `projects.<alias>.default_base_branch`. **프로젝트마다 다르므로 글로벌 fallback 에 의존하지 말 것** — alias 마다 명시되어 있어야 한다 (`validate-harness` SessionStart hook 이 누락 차단).
+
    ```bash
-   DEFAULT_BRANCH=$(gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name')
+   # PWD 부터 부모 traverse — .orch 디렉토리가 있는 첫 위치
+   ORCH_SETTINGS=""
+   d="$PWD"
+   while [ "$d" != "/" ]; do
+     if [ -f "$d/.orch/settings.json" ]; then ORCH_SETTINGS="$d/.orch/settings.json"; break; fi
+     d="$(dirname "$d")"
+   done
+
+   BASE_BRANCH=""
+   if [ -n "$ORCH_SETTINGS" ]; then
+     # cwd 가 어떤 alias.path 와 가장 길게 prefix-match 하는지로 alias 결정
+     alias=$(jq -r --arg cwd "$PWD" '
+       .projects // {} | to_entries
+       | map(select($cwd | startswith(.value.path)))
+       | sort_by(.value.path | length) | reverse | .[0].key // ""
+     ' "$ORCH_SETTINGS")
+     if [ -n "$alias" ]; then
+       BASE_BRANCH=$(jq -r --arg a "$alias" '.projects[$a].default_base_branch // ""' "$ORCH_SETTINGS")
+     fi
+   fi
+
+   # orch 외부 (settings.json 없음) 또는 alias 매칭 실패 시에만 gh fallback
+   if [ -z "$BASE_BRANCH" ]; then
+     BASE_BRANCH=$(gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name')
+   fi
+   [ -n "$BASE_BRANCH" ] || { echo "ERROR: BASE_BRANCH 결정 실패"; exit 1; }
    ```
-   `develop` / `main` / 그 외 무엇이든 리포가 알려주는 값을 그대로 사용. PR 의 `baseRefName` 도 보조 신호로 활용 가능 (release 브랜치로 머지된 경우 대응).
+
+   - **orch 워크스페이스 안에서 alias 매칭 성공인데 값이 빈 경우는 도달 불가** — hook 이 사전 차단. 도달했다면 hook 우회되었다는 신호 (예: 캐시된 plugin 구버전) — 사용자에게 보고.
+   - **PR.baseRefName 사전 검증**: `gh pr view --json baseRefName --jq '.baseRefName'` 값이 `BASE_BRANCH` 와 다르면 (예: release 브랜치로 머지) 경고하고 cleanup 보류 — 자동 switch 시 사용자가 기대한 branch 와 어긋남.
 2. 워킹 트리 깨끗한지 확인:
    ```bash
    git status --porcelain
    ```
    non-empty 면 자동 cleanup 중단, 사용자에게 stash/commit 요청.
 3. 현재 브랜치(`CUR=$(git branch --show-current)`) 에 따라 분기:
-   - `CUR == headRefName` (작업 브랜치 위): `git switch "$DEFAULT_BRANCH"` → pull → branch -d
-   - `CUR == DEFAULT_BRANCH` (이미 default 위): **switch 생략**, 바로 pull → branch -d. **pull 을 절대 건너뛰지 말 것** — 이게 "머지 후 로컬 default 가 최신화 안 됨" 버그의 원인.
+   - `CUR == headRefName` (작업 브랜치 위): `git switch "$BASE_BRANCH"` → pull → branch -d
+   - `CUR == BASE_BRANCH` (이미 base 위): **switch 생략**, 바로 pull → branch -d. **pull 을 절대 건너뛰지 말 것** — "머지 후 로컬 base 가 최신화 안 됨" 버그의 원인.
    - 그 외 (다른 feature 브랜치 등): 자동 cleanup 보류, 사용자에게 보고만. 자동 switch 시 작업 중 변경분 손실 위험.
 4. cleanup 실행 (분기 1·2 공통):
    ```bash
@@ -131,10 +161,12 @@ Monitor 는 세션 lifetime 동안 유지 (`persistent: true`). 사용자가 세
 
 ## 실패 모드 / 주의
 
-- ❌ `git switch develop` 처럼 default 브랜치 하드코딩 — main 리포에서 switch 실패로 cleanup 전체 중단 + pull 누락
-  ✅ `gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name'` 로 매번 조회
-- ❌ "현재 브랜치 ≠ headRefName" 만 보고 cleanup 전체 보류 — 사용자가 이미 default 로 이동해 있으면 pull 까지 건너뜀
-  ✅ 3-way 분기 (headRefName / default / 그 외) 로 default 위에 있을 땐 pull 만이라도 수행
+- ❌ base 브랜치 하드코딩 (`develop` / `main`) 또는 글로벌 단일값 의존 — 프로젝트마다 base 가 다른데 한 값으로 고정 → switch 실패로 cleanup 전체 중단 + pull 누락
+  ✅ orch settings.json 의 `projects.<alias>.default_base_branch` (프로젝트별, validate-harness hook 이 필수 보장), orch 외부 환경에서만 `gh repo view --json defaultBranchRef` fallback
+- ❌ "현재 브랜치 ≠ headRefName" 만 보고 cleanup 전체 보류 — 사용자가 이미 base 로 이동해 있으면 pull 까지 건너뜀
+  ✅ 3-way 분기 (headRefName / base / 그 외) 로 base 위에 있을 땐 pull 만이라도 수행
+- ❌ PR baseRefName 검증 생략 — PR 이 release/staging 같은 비기본 브랜치로 머지된 경우에도 default 로 switch 해버려 mismatch
+  ✅ `gh pr view --json baseRefName` 로 PR 의 실제 base 와 결정한 BASE_BRANCH 비교, 다르면 사용자 확인
 - ❌ `git branch -D` 사용 — 머지 안 된 브랜치도 강제 삭제, 작업 손실
   ✅ `git branch -d` 만 사용. git 이 거부하면 cleanup 실패로 보고
 - ❌ 워킹 트리 dirty 한 상태에서 `git switch` — 변경 사항 손실 또는 conflict
