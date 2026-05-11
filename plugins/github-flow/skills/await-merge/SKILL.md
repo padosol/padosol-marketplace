@@ -92,19 +92,28 @@ done
 Monitor 알림 받으면:
 
 #### `PR_MERGED`
-1. 현재 브랜치가 cleanup 대상 (`headRefName`) 와 일치하는지 확인. 다르면 사용자에게 보고만 하고 자동 switch 보류.
+
+1. **default 브랜치 동적 조회 (하드코딩 금지)**:
+   ```bash
+   DEFAULT_BRANCH=$(gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name')
+   ```
+   `develop` / `main` / 그 외 무엇이든 리포가 알려주는 값을 그대로 사용. PR 의 `baseRefName` 도 보조 신호로 활용 가능 (release 브랜치로 머지된 경우 대응).
 2. 워킹 트리 깨끗한지 확인:
    ```bash
    git status --porcelain
    ```
    non-empty 면 자동 cleanup 중단, 사용자에게 stash/commit 요청.
-3. cleanup 실행:
+3. 현재 브랜치(`CUR=$(git branch --show-current)`) 에 따라 분기:
+   - `CUR == headRefName` (작업 브랜치 위): `git switch "$DEFAULT_BRANCH"` → pull → branch -d
+   - `CUR == DEFAULT_BRANCH` (이미 default 위): **switch 생략**, 바로 pull → branch -d. **pull 을 절대 건너뛰지 말 것** — 이게 "머지 후 로컬 default 가 최신화 안 됨" 버그의 원인.
+   - 그 외 (다른 feature 브랜치 등): 자동 cleanup 보류, 사용자에게 보고만. 자동 switch 시 작업 중 변경분 손실 위험.
+4. cleanup 실행 (분기 1·2 공통):
    ```bash
-   git switch develop
    git pull --ff-only
-   git branch -d <headRefName>   # -D 금지: merged 아니면 거부되도록
+   git branch -d "$HEAD_REF_NAME"   # -D 금지: merged 아니면 거부되도록
    ```
-4. 사용자에게 결과 보고 + Linear MP 키가 있으면 자동 Done 전이 안내 (Linear GitHub Integration 이 처리).
+   `-d` 가 거부하면 ("not fully merged") 에러 그대로 사용자에게 노출. 강제 삭제 자동 fallback 금지.
+5. 사용자에게 결과 보고 + Linear MP 키가 있으면 자동 Done 전이 안내 (Linear GitHub Integration 이 처리).
 
 #### `PR_CLOSED_NOT_MERGED`
 - cleanup 절대 자동 수행 금지 (작업 손실 위험)
@@ -122,6 +131,10 @@ Monitor 는 세션 lifetime 동안 유지 (`persistent: true`). 사용자가 세
 
 ## 실패 모드 / 주의
 
+- ❌ `git switch develop` 처럼 default 브랜치 하드코딩 — main 리포에서 switch 실패로 cleanup 전체 중단 + pull 누락
+  ✅ `gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name'` 로 매번 조회
+- ❌ "현재 브랜치 ≠ headRefName" 만 보고 cleanup 전체 보류 — 사용자가 이미 default 로 이동해 있으면 pull 까지 건너뜀
+  ✅ 3-way 분기 (headRefName / default / 그 외) 로 default 위에 있을 땐 pull 만이라도 수행
 - ❌ `git branch -D` 사용 — 머지 안 된 브랜치도 강제 삭제, 작업 손실
   ✅ `git branch -d` 만 사용. git 이 거부하면 cleanup 실패로 보고
 - ❌ 워킹 트리 dirty 한 상태에서 `git switch` — 변경 사항 손실 또는 conflict
