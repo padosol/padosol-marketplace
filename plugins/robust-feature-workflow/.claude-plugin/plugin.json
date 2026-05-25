@@ -1,0 +1,8 @@
+{
+  "name": "robust-feature-workflow",
+  "description": "단일 기능을 \"속도보다 견고함\" 우선으로 도메인→애플리케이션→어댑터(inside-out) 순 Phase 0~6로 개발하는 워크플로우. DDD + 헥사고날(포트&어댑터) + TDD 결합, 각 Phase 끝에 통과 게이트. 문서 작성은 domain-docs 플러그인에 위임.",
+  "version": "0.1.0",
+  "author": {
+    "name": "padosol"
+  }
+}
