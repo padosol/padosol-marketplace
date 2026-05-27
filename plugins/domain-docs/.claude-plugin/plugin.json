@@ -1,0 +1,8 @@
+{
+  "name": "domain-docs",
+  "description": "도메인 기반(DDD/헥사고날) 코드베이스에서 프로젝트 문서를 \"변경 주체를 따라\" 올바른 계층에 배치·작성한다. ADR, 계층형 CLAUDE.md, README, 용어집, 도메인 간 계약을 다루고 타입별 템플릿을 제공한다.",
+  "version": "0.1.0",
+  "author": {
+    "name": "padosol"
+  }
+}
