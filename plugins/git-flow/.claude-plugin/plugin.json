@@ -1,0 +1,8 @@
+{
+  "name": "git-flow",
+  "description": "PR/MR 라이프사이클 자동화 (GitHub + GitLab 양쪽 지원). 각 스킬이 플랫폼을 자동 감지한 뒤 GITHUB_GUIDE.md / GITLAB_GUIDE.md 의 호스트별 명령을 따른다. /open-pr 가 PR/MR 생성 + Linear MP 키 + Closes 매직워드, /post-review 가 코드 리뷰 보고서를 PR/MR 코멘트로 게시 (마커 기반 idempotent update), /await-merge 가 머지될 때까지 폴링한 뒤 orch settings 의 projects.<alias>.default_base_branch 기반(orch 외부는 host 의 default 로 fallback)으로 이동·pull·로컬 브랜치 삭제까지 수행. 플랫폼 결정 순서: GF_HOST 환경변수 > .orch/settings.json git_host > gh/glab auth status 자동 감지.",
+  "version": "0.3.0",
+  "author": {
+    "name": "padosol"
+  }
+}
