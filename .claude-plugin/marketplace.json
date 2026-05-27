@@ -40,11 +40,11 @@
       "source": "./plugins/lol-patch-crawler"
     },
     {
-      "name": "github-flow",
-      "description": "PR/MR 라이프사이클 자동화 (GitHub + GitLab 지원). /open-pr 가 host 자동 감지 → PR/MR 생성 + Linear MP 키 + Closes, /post-review 가 코드 리뷰 보고서를 PR/MR 코멘트로 idempotent 게시, /await-merge 가 머지 폴링 + orch settings 의 프로젝트별 default_base_branch 로 cleanup.",
+      "name": "git-flow",
+      "description": "PR/MR 라이프사이클 자동화 (GitHub + GitLab 지원). 각 스킬이 플랫폼을 자동 감지한 뒤 GITHUB_GUIDE.md / GITLAB_GUIDE.md 를 따른다. /open-pr 가 PR/MR 생성 + Linear MP 키 + Closes, /post-review 가 코드 리뷰 보고서를 PR/MR 코멘트로 idempotent 게시, /await-merge 가 머지 폴링 + orch settings 의 프로젝트별 default_base_branch 로 cleanup.",
       "category": "workflow",
-      "version": "0.2.0",
-      "source": "./plugins/github-flow"
+      "version": "0.3.0",
+      "source": "./plugins/git-flow"
     },
     {
       "name": "token-tracker",

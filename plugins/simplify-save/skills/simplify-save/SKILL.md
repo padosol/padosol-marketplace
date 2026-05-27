@@ -140,4 +140,4 @@ Confirm to the user: the report path, the number of findings (fixed vs skipped),
 
 If the user wants the report to include precise per-model token usage and estimated cost for this session, chain `/track-tokens` (token-tracker plugin) and append its markdown output to the report file — it reads the transcript JSONL directly so the numbers are authoritative, not estimated.
 
-If the work is happening on a feature branch with an open PR and the user wants the review visible on GitHub, suggest chaining `/post-review` (github-flow plugin) — it posts the saved report as a PR comment, idempotent on re-run.
+If the work is happening on a feature branch with an open PR and the user wants the review visible on GitHub/GitLab, suggest chaining `/post-review` (git-flow plugin) — it posts the saved report as a PR/MR comment, idempotent on re-run.
