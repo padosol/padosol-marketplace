@@ -41,9 +41,9 @@
     },
     {
       "name": "git-flow",
-      "description": "PR/MR 라이프사이클 자동화 (GitHub + GitLab 지원). 각 스킬이 플랫폼을 자동 감지한 뒤 GITHUB_GUIDE.md / GITLAB_GUIDE.md 를 따른다. /open-pr 가 PR/MR 생성 + Linear MP 키 + Closes, /post-review 가 코드 리뷰 보고서를 PR/MR 코멘트로 idempotent 게시, /await-merge 가 머지 폴링 + orch settings 의 프로젝트별 default_base_branch 로 cleanup.",
+      "description": "PR/MR 라이프사이클 자동화 (GitHub + GitLab 지원). 각 스킬이 플랫폼을 자동 감지한 뒤 GITHUB_GUIDE.md / GITLAB_GUIDE.md 를 따른다. /open-pr 가 PR/MR 생성 + Linear MP 키 + Closes + 상황별 본문 템플릿(프로젝트 템플릿 우선, 없으면 기능/리팩토링/버그픽스/기타 자동 판단), /post-review 가 코드 리뷰 보고서를 PR/MR 코멘트로 idempotent 게시, /await-merge 가 머지 폴링 + orch settings 의 프로젝트별 default_base_branch 로 cleanup.",
       "category": "workflow",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "source": "./plugins/git-flow"
     },
     {
