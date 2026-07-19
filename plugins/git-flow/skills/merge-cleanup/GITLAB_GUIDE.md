@@ -1,6 +1,6 @@
-# cleanup-merged · GITLAB_GUIDE
+# merge-cleanup · GITLAB_GUIDE
 
-`GF_HOST=gitlab` 일 때 cleanup-merged SKILL.md 가 따르는 호스트별 명령. 인증된 `glab` CLI 기준. SKILL 본문의 `<가이드: 섹션명>` 은 아래 동명 섹션을 가리킨다. "PR" 은 GitLab 에선 MR, 번호는 iid.
+`GF_HOST=gitlab` 일 때 merge-cleanup SKILL.md 가 따르는 호스트별 명령. 인증된 `glab` CLI 기준. SKILL 본문의 `<가이드: 섹션명>` 은 아래 동명 섹션을 가리킨다. "PR" 은 GitLab 에선 MR, 번호는 iid.
 
 ## 현재 브랜치의 PR 번호
 

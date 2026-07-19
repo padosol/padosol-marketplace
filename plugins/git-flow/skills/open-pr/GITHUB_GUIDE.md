@@ -49,4 +49,4 @@ gh pr create --base "$base" --title "$title" --body-file "$body_file"
 gh pr checks "$PR_NUM"
 ```
 
-모든 항목이 곧장 fail 이면 await-merge chain 보류, pending/queued/pass 면 진행.
+모든 항목이 곧장 fail 이면 사용자에게 알림, pending/queued/pass 면 진행.
