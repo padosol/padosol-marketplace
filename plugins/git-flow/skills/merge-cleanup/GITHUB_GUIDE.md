@@ -1,6 +1,6 @@
-# cleanup-merged · GITHUB_GUIDE
+# merge-cleanup · GITHUB_GUIDE
 
-`GF_HOST=github` 일 때 cleanup-merged SKILL.md 가 따르는 호스트별 명령. 인증된 `gh` CLI 기준. SKILL 본문의 `<가이드: 섹션명>` 은 아래 동명 섹션을 가리킨다.
+`GF_HOST=github` 일 때 merge-cleanup SKILL.md 가 따르는 호스트별 명령. 인증된 `gh` CLI 기준. SKILL 본문의 `<가이드: 섹션명>` 은 아래 동명 섹션을 가리킨다.
 
 ## 현재 브랜치의 PR 번호
 

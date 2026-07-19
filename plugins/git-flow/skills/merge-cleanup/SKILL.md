@@ -1,32 +1,20 @@
 ---
-name: cleanup-merged
-description: 현재 세션의 PR/MR 이 이미 머지되었는지 폴링 없이 1회 확인하고, 머지되었으면 그 브랜치의 git worktree 제거 → 로컬 브랜치 삭제 → PR 이 머지된 타겟(base) 브랜치를 원격 최신으로 fast-forward → 정리 결과 요약문 출력까지 한 번에 수행한다. GitHub (gh) 와 GitLab (glab) 양쪽 지원 — 플랫폼은 .orch/settings.json 의 git_host 또는 인증 상태로 자동 결정 후 호스트별 명령은 이 스킬 디렉토리의 GITHUB_GUIDE.md / GITLAB_GUIDE.md 를 따른다. await-merge 와 달리 (1) 기다리지 않고 즉시 확인, (2) git worktree 까지 teardown, (3) 정리 요약을 출력한다 — 아직 안 머지됐으면 cleanup 없이 await-merge 사용을 제안. 사용자가 "머지됐으면 정리해줘", "워크트리 정리", "PR 머지 확인하고 청소", "cleanup merged", "/cleanup-merged", "머지 확인 후 워크트리·브랜치 정리하고 타겟 최신화" 같은 의도를 보이면 트리거. PR 번호 인자 없으면 현재 브랜치의 PR 자동 검색. 머지 안 됨(OPEN/CLOSED)이면 cleanup 절대 수행 안 함.
+name: merge-cleanup
+description: '수동 전용 머지정리 스킬. 오직 사용자가 명시적으로 /merge-cleanup 을 실행할 때만 동작한다 — "머지됐으면 정리해줘" 같은 자연어 의도로 자동 호출하거나, 다른 스킬에서 자동 chain 하지 말 것 (자동 트리거·폴링 없음). 하는 일: 현재 세션의 PR/MR 이 이미 머지되었는지 1회 확인하고, 머지되었으면 그 브랜치의 git worktree 제거 → 로컬 브랜치 삭제 → PR 이 머지된 타겟(base) 브랜치를 원격 최신으로 fast-forward → 정리 결과 요약문 출력까지 한 번에 수행. 아직 안 머지됐으면(OPEN/CLOSED) 아무것도 정리하지 않고 안내 후 종료. GitHub (gh) 와 GitLab (glab) 양쪽 지원 — 플랫폼은 .orch/settings.json 의 git_host 또는 인증 상태로 자동 결정 후 호스트별 명령은 이 스킬 디렉토리의 GITHUB_GUIDE.md / GITLAB_GUIDE.md 를 따른다. PR 번호 인자 없으면 현재 브랜치의 PR 자동 검색.'
 ---
 
-# cleanup-merged
+# merge-cleanup (머지정리)
 
-현재 세션에서 작업한 PR/MR 이 **이미 머지되었는지 지금 1회 확인**하고, 머지되었다면 **워크트리 → 로컬 브랜치 → 타겟 브랜치 최신화** 순으로 정리한 뒤 **요약문**을 보여 준다. 사용자가 웹에서 이미 머지를 눌러 둔 뒤 "이제 로컬 뒷정리 해줘" 흐름을 원할 때 사용.
+현재 세션에서 작업한 PR/MR 이 **이미 머지되었는지 1회 확인**하고, 머지되었다면 **워크트리 → 로컬 브랜치 → 타겟 브랜치 최신화** 순으로 정리한 뒤 **요약문**을 보여 준다. 사용자가 웹에서 이미 머지를 눌러 둔 뒤 "이제 로컬 뒷정리 해줘" 흐름을 손 안 대고 끝내려고 만든 스킬.
 
-## await-merge 와의 차이 (겹치지만 다르다)
+**수동 전용 · 폴링 없음.** 머지를 기다리지 않는다 (1회 확인만). 아직 안 머지됐으면 정리하지 않고 종료하니, 머지한 뒤 다시 `/merge-cleanup` 을 실행하면 된다.
 
-| | `await-merge` | `cleanup-merged` (이 스킬) |
-|---|---|---|
-| 머지 감지 | **폴링** (60s 간격 대기) | **1회 확인** (기다리지 않음) |
-| worktree | 안 건드림 (로컬 브랜치만 삭제) | **git worktree 제거 포함** |
-| 타겟 최신화 | switch → pull | **PR baseRefName 기준 최신화 (checkout 여부 무관)** |
-| 출력 | 간단 보고 | **정리 요약문** |
+## 호출 방법 (수동 전용 — 자동 트리거 금지)
 
-**아직 머지 안 됨이면** 이 스킬은 cleanup 을 하지 않고 `/await-merge` (폴링) 사용을 제안한다. 반대로 이미 머지된 걸 아는 상태에서 폴링은 낭비이므로 이 스킬을 쓴다.
-
-## 언제 트리거
-
-사용자가 다음 중 하나를 표현:
-- `/cleanup-merged` (인자 있거나 없거나)
-- "머지됐으면 정리" / "머지 확인하고 청소" / "워크트리 정리" / "PR 머지됐는지 보고 뒷정리"
-- "머지 후 워크트리·브랜치 지우고 타겟 최신화" / "cleanup merged"
-- open-pr / await-merge 이후에도 worktree 가 남아 있어 명시적으로 teardown 을 원할 때
-
-자동 트리거 금지: 사용자가 명시 의사 없으면 worktree/브랜치 삭제하지 않음 (파괴적·복구 어려움).
+- **오직 `/merge-cleanup` 명시 실행에만 동작한다.**
+- `/merge-cleanup` 또는 `/merge-cleanup <PR#>`
+- ❌ "머지됐으면 정리해줘" 같은 자연어 의도로 **자동 invoke 하지 말 것**
+- ❌ open-pr 등 다른 스킬에서 **자동 chain 하지 말 것** (이 스킬은 파괴적 작업 — worktree/브랜치 삭제 — 이라 사용자 명시 실행만 허용)
 
 ## 절차
 
@@ -73,7 +61,7 @@ echo "GF_HOST=$GF_HOST"
 ### 1. 대상 PR 결정
 
 인자 우선순위:
-1. `args` 에 PR 번호 있으면 그대로 사용 (예: `/cleanup-merged 84`) — 현재 브랜치가 아닌 PR (예: orch 워커가 머지한 PR) 정리에 필요
+1. `args` 에 PR 번호 있으면 그대로 사용 (예: `/merge-cleanup 84`) — 현재 브랜치가 아닌 PR (예: 다른 worktree 에서 머지한 PR) 정리에 필요
 2. 없으면 현재 브랜치의 PR 1건을 `<가이드: 현재 브랜치의 PR 번호>` 로 자동 검색:
    - 검색 실패 (현재 브랜치가 타겟/보호 브랜치라 PR 없음 등) → 사용자에게 PR 번호 묻고 중단 (자유 입력이라 plain text 질문 OK). 임의 추측 금지
    - 다중 매칭 → 후보 최대 4건 (PR 번호·title·state) 을 모아 **`AskUserQuestion` 도구로 TUI 선택지 제시**, 사용자 선택을 받는다
@@ -92,7 +80,7 @@ PR_URL="$(echo "$PR_INFO"    | jq -r '.url')"
 
 분기:
 - `STATE == MERGED` → 정상. 섹션 3 으로 진행
-- `STATE == OPEN` → **아직 안 머지됨. cleanup 절대 안 함.** 사용자에게 "아직 open 상태" 알리고, 기다렸다 정리하려면 `/await-merge <번호>` 를 쓰도록 제안 후 종료
+- `STATE == OPEN` → **아직 안 머지됨. cleanup 절대 안 함.** 사용자에게 "아직 open 상태" 알리고, **머지한 뒤 다시 `/merge-cleanup <번호>` 를 실행**하도록 안내 후 종료 (폴링하지 않음)
 - `STATE == CLOSED` (merged_at 빈 값) → 머지 안 된 채 닫힘. cleanup 안 하고 사용자 안내 후 종료 (작업 손실 위험)
 
 **`TARGET` (= PR baseRefName) 이 이 스킬이 최신화할 타겟 브랜치의 진실의 원천이다.** orch settings 의 `projects.<alias>.default_base_branch` 와 다르면 (예: release 브랜치로 머지) 요약에 경고로 남기되, 최신화 대상은 실제 머지된 `TARGET` 을 따른다.
@@ -118,7 +106,7 @@ TARGET_WT="$(wt_path_for_branch "$TARGET")"      # 타겟 브랜치가 체크아
 
 케이스 분류:
 - **Case L (linked worktree)**: `HEAD_WT` 가 비어있지 않고 `HEAD_WT != MAIN_WT` — 머지된 브랜치가 별도 worktree 에 있음. worktree teardown 대상.
-- **Case M (main worktree)**: `HEAD_WT == MAIN_WT` — 머지된 브랜치가 메인 체크아웃에 있음. worktree 제거 없이 switch 후 브랜치 삭제 (await-merge 와 동일 상황).
+- **Case M (main worktree)**: `HEAD_WT == MAIN_WT` — 머지된 브랜치가 메인 체크아웃에 있음. worktree 제거 없이 switch 후 브랜치 삭제.
 - **Case N (미체크아웃)**: `HEAD_WT` 빈 값 — 브랜치가 어느 worktree 에도 체크아웃 안 됨. 로컬 브랜치 ref 만 존재하거나 이미 없음.
 
 ### 4. 사전 가드
@@ -127,7 +115,7 @@ TARGET_WT="$(wt_path_for_branch "$TARGET")"      # 타겟 브랜치가 체크아
 
 1. **자기 자신 worktree 제거 방지 (Case L)**: `CUR_WT == HEAD_WT` 이면 **자동 제거 금지**. 지금 세션이 서 있는 디렉토리를 지우면 이후 셸 작업 경로가 사라진다 (harness cwd 가 삭제된 경로에 묶임). 이 경우 자동 실행하지 말고, 메인 워크트리(`$MAIN_WT`)에서 이 스킬을 다시 실행하거나 아래 수동 명령을 안내한다:
    ```
-   메인 워크트리로 이동 후 재실행하세요:  (예)  cd "$MAIN_WT" && /cleanup-merged <번호>
+   메인 워크트리로 이동 후 재실행하세요:  (예)  cd "$MAIN_WT" && /merge-cleanup <번호>
    ```
 2. **worktree dirty 가드 (Case L)**: `git -C "$HEAD_WT" status --porcelain` 이 non-empty 면 uncommitted 변경 존재 → **자동 제거 금지** (`--force` 사용 안 함). 사용자에게 commit/stash 후 재시도 요청.
 3. **operating worktree dirty 가드 (Case M)**: switch 가 필요한 Case M 에서 `git -C "$MAIN_WT" status --porcelain` non-empty 면 switch 불가 → 브랜치 삭제 보류, 사용자 안내.
@@ -192,7 +180,7 @@ ADVANCED="$( [ "$BEFORE" != "(none)" ] && git rev-list --count "$BEFORE..$AFTER"
 수집한 변수로 사용자에게 markdown 요약을 보여 준다 (Claude 가 렌더). 형식:
 
 ```markdown
-## ✅ cleanup-merged 요약
+## ✅ merge-cleanup 요약
 
 - **PR**: #<번호> <제목>  ([링크](<PR_URL>))
 - **머지 시각**: <MERGED_AT>
@@ -209,7 +197,9 @@ ADVANCED="$( [ "$BEFORE" != "(none)" ] && git rev-list --count "$BEFORE..$AFTER"
 ## 실패 모드 / 주의
 
 - ❌ 머지 안 됐는데 (OPEN/CLOSED) cleanup — 작업 손실
-  ✅ §2 에서 MERGED 만 진행, OPEN 은 await-merge 제안, CLOSED 는 안내 후 종료
+  ✅ §2 에서 MERGED 만 진행, OPEN 은 "머지 후 다시 실행" 안내, CLOSED 는 안내 후 종료 (폴링·대기 없음)
+- ❌ 자연어 의도로 자동 invoke / 다른 스킬에서 자동 chain — 사용자 모르게 worktree·브랜치 삭제
+  ✅ 오직 `/merge-cleanup` 명시 실행에만 동작 (수동 전용)
 - ❌ 플랫폼 분기를 SKILL 본문에 인라인 — 한쪽 host 만 동작
   ✅ §0 에서 1회 탐지 후 GITHUB_GUIDE.md / GITLAB_GUIDE.md 의 명령만 사용
 - ❌ 지금 서 있는 worktree 를 자동 제거 (`CUR_WT == HEAD_WT`) — 셸 작업 경로 증발, 이후 tool 호출 실패
@@ -229,38 +219,36 @@ ADVANCED="$( [ "$BEFORE" != "(none)" ] && git rev-list --count "$BEFORE..$AFTER"
 
 Case M (메인 워크트리에서 직접 작업 후 머지):
 ```
-사용자: PR 머지했어. 워크트리·브랜치 정리하고 develop 최신화해줘.
-Claude: [/cleanup-merged 호출]
-        → §0 플랫폼 탐지 (github) → GITHUB_GUIDE.md
+사용자: /merge-cleanup
+Claude: → §0 플랫폼 탐지 (github) → GITHUB_GUIDE.md
         → §1 현재 브랜치 feature/... 의 PR #84 확인
-        → §2 state=MERGED (baseRefName=develop)
+        → §2 state=MERGED (baseRefName=main)
         → §3 HEAD_WT == MAIN_WT (Case M), 별도 worktree 없음
-        → §5 switch develop → branch -d feature/...
-        → §6 fetch → develop ff (+3 commits)
+        → §5 switch main → branch -d feature/...
+        → §6 fetch → main ff (+3 commits)
         → §7 요약 출력
 ```
 
-Case L (orch 워커 worktree 를 leader 세션에서 정리):
+Case L (별도 worktree 를 메인 세션에서 정리):
 ```
-사용자: /cleanup-merged 91
-Claude: → §2 PR #91 MERGED, headRefName=feat/MP-91-x, baseRefName=develop
-        → §3 HEAD_WT=/…/worktrees/mp-91 (linked, CUR_WT=메인이라 자기제거 아님)
+사용자: /merge-cleanup 91
+Claude: → §2 PR #91 MERGED, headRefName=feat/x, baseRefName=main
+        → §3 HEAD_WT=/…/worktrees/x (linked, CUR_WT=메인이라 자기제거 아님)
         → §4 worktree clean 확인
-        → §5 worktree remove /…/worktrees/mp-91 → prune → branch -d feat/MP-91-x
-        → §6 develop 은 미체크아웃 → git fetch origin develop:develop (+2)
-        → §7 요약: worktree 제거됨 + 브랜치 삭제 + develop 최신화
+        → §5 worktree remove /…/worktrees/x → prune → branch -d feat/x
+        → §6 main 은 미체크아웃 → git fetch origin main:main (+2)
+        → §7 요약: worktree 제거됨 + 브랜치 삭제 + main 최신화
 ```
 
 아직 안 머지된 경우:
 ```
-사용자: 머지됐으면 정리해줘
+사용자: /merge-cleanup
 Claude: → §2 state=OPEN
-        → cleanup 안 함. "아직 open 입니다. 머지 기다렸다 정리하려면 /await-merge <번호> 를 쓰세요." 안내 후 종료
+        → cleanup 안 함. "아직 open 입니다. 웹에서 머지한 뒤 /merge-cleanup <번호> 를 다시 실행하세요." 안내 후 종료 (폴링하지 않음)
 ```
 
 ## See Also
 
-- `/await-merge` — 머지를 **폴링하며 기다렸다가** 정리 (아직 안 머지된 경우용). 이 스킬은 **이미 머지된** 경우용 + worktree teardown + 요약 (이 플러그인)
-- `/open-pr` — PR/MR 생성 → await-merge chain (이 플러그인)
+- `/open-pr` — PR/MR 생성 (이 플러그인). 생성만 담당하며 자동 체인·폴링 없음. 사용자가 웹에서 머지한 뒤 이 스킬을 **수동으로** 실행해 뒷정리
 - `GITHUB_GUIDE.md` / `GITLAB_GUIDE.md` — 플랫폼별 호스트 명령 (이 스킬 디렉토리)
 - `git worktree` 문서: https://git-scm.com/docs/git-worktree
