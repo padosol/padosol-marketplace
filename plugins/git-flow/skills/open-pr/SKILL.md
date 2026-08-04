@@ -1,11 +1,11 @@
 ---
 name: open-pr
-description: 현재 브랜치를 GitHub PR 또는 GitLab MR 로 생성한다. 생성까지만 담당하며 머지 대기·폴링은 하지 않는다 (머지 후 로컬 정리는 `/merge-cleanup`). 사용자가 "PR 만들어줘", "MR 올려줘", "PR 올려", "open pr", "/open-pr" 같은 의도를 보이거나 커밋 직후 PR 까지 가자고 하면 트리거.
+description: 현재 브랜치를 GitHub PR 또는 GitLab MR 로 생성한다. 사용자가 "PR 만들어줘", "MR 올려줘", "PR 올려", "open pr", "/open-pr" 같은 의도를 보이거나 커밋 직후 PR 까지 가자고 하면 트리거.
 ---
 
 # open-pr
 
-현재 feature 브랜치를 GitHub PR 또는 GitLab MR 로 올린다. **생성까지만 담당하며 자동 머지 폴링·체인은 없다** — 사용자가 웹에서 직접 머지한 뒤 뒷정리가 필요하면 `/merge-cleanup` 을 수동으로 실행한다.
+현재 feature 브랜치를 GitHub PR 또는 GitLab MR 로 올린다. **PR/MR 생성이 이 스킬의 전부다** — 머지를 기다리거나 폴링하지 않고, 머지 이후는 다루지 않는다.
 
 ## 언제 트리거
 
@@ -217,7 +217,7 @@ PR_NUM="$(echo "$CREATE_URL" | grep -Eo '[0-9]+$')"
 
 모든 항목이 곧장 fail 이면 사용자에게 알린다. 정상 (pending/queued/pass) 이면 그대로 진행. 장시간 CI 대기는 여기서 watch 하지 않는다 (이 스킬은 폴링하지 않음).
 
-생성한 PR/MR 번호·URL 을 사용자에게 보고하고 **종료한다.** 자동으로 머지를 기다리거나 다른 스킬을 chain 호출하지 않는다. 사용자가 웹에서 머지한 뒤 로컬 뒷정리(worktree·브랜치 삭제, 타겟 최신화)가 필요하면 `/merge-cleanup <PR#>` 을 **수동으로** 실행하도록 안내만 한다.
+생성한 PR/MR 번호·URL 을 사용자에게 보고하고 **종료한다.** 자동으로 머지를 기다리거나 다른 스킬을 chain 호출하지 않는다. 머지 이후의 처리는 이 스킬의 범위가 아니다.
 
 ## 실패 모드 / 주의
 
@@ -244,7 +244,7 @@ PR_NUM="$(echo "$CREATE_URL" | grep -Eo '[0-9]+$')"
 - ❌ 상황을 임의로 정해 엉뚱한 내장 템플릿 선택 (예: 버그픽스인데 feature.md) — 섹션이 변경 성격과 어긋남
   ✅ 브랜치 prefix → 커밋 type 순으로 근거 있게 판단, 근거 부족하면 사용자에게 확인
 - ❌ PR 생성 후 자동으로 머지 폴링/체인 시작 — 사용자 모르게 세션 리소스 점유
-  ✅ 이 스킬은 생성까지만. 머지 후 정리는 사용자가 `/merge-cleanup` 을 수동 실행 (자동 chain 없음)
+  ✅ PR/MR URL 을 보고하고 즉시 종료. 머지 이후는 다루지 않는다
 
 ## 사용 예
 
@@ -257,9 +257,7 @@ Claude: [/safe-commit] 으로 commit 끝남 → /open-pr 호출
         → 본문 생성: 프로젝트 템플릿 없음 → 브랜치 prefix `refactor/` 매칭
           → templates/refactor.md 로 슬롯 채움 (질문 없이 자동 확정) + `Closes MP-84`
         → <가이드: PR/MR 생성> 실행
-        → PR #84 생성 보고 후 종료 ("머지 후 뒷정리는 /merge-cleanup 84 를 수동 실행" 안내)
-        ... (사용자 GitHub 에서 머지) ...
-        → (사용자가 원할 때) /merge-cleanup 84 수동 실행
+        → PR #84 URL 보고 후 종료
 ```
 
 이슈 키가 없는 저장소 (가장 흔한 경우):
@@ -288,12 +286,11 @@ GitLab workspace 예:
 사용자: MR 까지 올려줘
 Claude: → §0 탐지 (GF_HOST=gitlab, settings.json git_host=gitlab) → GITLAB_GUIDE.md
         → <가이드: PR/MR 생성> (glab mr create --target-branch develop)
-        → MR !12 생성 보고 후 종료 ("머지 후 /merge-cleanup 12 수동 실행" 안내)
+        → MR !12 URL 보고 후 종료
 ```
 
 ## See Also
 
-- `/merge-cleanup` — 사용자가 웹에서 머지한 뒤 **수동으로** 실행하는 뒷정리 스킬 (worktree·브랜치 삭제, 타겟 최신화). 이 스킬이 자동 chain 하지 않음 (이 플러그인)
 - `safe-commit:safe-commit` — 커밋 단계의 sibling 스킬 (보호 브랜치 가드)
 - `GITHUB_GUIDE.md` / `GITLAB_GUIDE.md` — 플랫폼별 호스트 명령 (이 스킬 디렉토리)
 - `templates/feature.md` · `refactor.md` · `bugfix.md` · `general.md` — 프로젝트 템플릿이 없을 때 쓰는 내장 상황별 골격 (이 스킬 디렉토리)
