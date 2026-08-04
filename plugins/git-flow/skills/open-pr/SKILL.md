@@ -1,6 +1,6 @@
 ---
 name: open-pr
-description: 현재 브랜치 기준으로 PR/MR 을 GitHub 또는 GitLab 에 생성한다. 플랫폼은 .orch/settings.json 의 git_host 또는 gh/glab 인증 상태로 자동 결정 (GF_HOST 환경변수 override 가능) 후, 호스트별 명령은 이 스킬 디렉토리의 GITHUB_GUIDE.md / GITLAB_GUIDE.md 를 따른다. 브랜치명 / 커밋 메시지에 이슈 키(Linear `MP-42` 또는 GitHub Issues `#42`)가 있으면 제목과 `Closes` 매직워드에 반영하고, **없으면 묻지 않고 생략한다** (이슈 트래커를 안 쓰는 저장소가 정상 케이스 — placeholder 생성 금지). 본문 템플릿은 프로젝트 PR/MR 템플릿 (`.github/PULL_REQUEST_TEMPLATE.md` / `.gitlab/merge_request_templates/`) 을 우선 활용하고, 없으면 변경 성격(기능 구현·리팩토링·버그픽스·그 외)을 브랜치 prefix → 커밋 type 으로 자동 판단(애매하면 확인)해 이 스킬 디렉토리 `templates/` 의 상황별 템플릿을 선택한다. **PR/MR 생성까지만 담당한다 — 자동 머지 폴링·체인 없음.** 머지 후 로컬 정리는 사용자가 웹에서 직접 머지한 뒤 `/merge-cleanup` 을 수동 실행한다. 사용자가 "PR 만들어줘", "MR 만들어줘", "open pr", "/open-pr", "PR 올려" 같은 의도를 보이면 트리거. 기본 base 브랜치는 `develop` (hotfix 패턴은 `main`). 보호 브랜치 직접 push 는 `safe-commit` 스킬이 막으므로 이 스킬은 push 가 끝난 feature 브랜치에서만 의미.
+description: 현재 브랜치를 GitHub PR 또는 GitLab MR 로 생성한다. 생성까지만 담당하며 머지 대기·폴링은 하지 않는다 (머지 후 로컬 정리는 `/merge-cleanup`). 사용자가 "PR 만들어줘", "MR 올려줘", "PR 올려", "open pr", "/open-pr" 같은 의도를 보이거나 커밋 직후 PR 까지 가자고 하면 트리거.
 ---
 
 # open-pr
