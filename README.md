@@ -19,3 +19,4 @@ padosol 의 Claude Code 플러그인 마켓플레이스.
 | `simplify-save` | 변경된 코드를 재사용성·품질·효율 관점으로 리뷰하고 보고서 저장 |
 | `lol-patch-crawler` | LoL 공식 패치노트 크롤링 → docs/patch/{버전}.json 변환 |
 | `git-flow` | `/open-pr` + `/await-merge` 로 PR 생성·머지 대기·로컬 브랜치 정리까지 자동 (GitHub/GitLab 자동 감지) |
+| `improvement-case` | 이력서용 문제/개선 사례를 증상→계측→재발 방지→수치 골격으로 작성·검산 (13항목 체크리스트) |

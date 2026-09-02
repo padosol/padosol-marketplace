@@ -66,6 +66,13 @@
       "category": "docs",
       "version": "0.1.0",
       "source": "./plugins/domain-docs"
+    },
+    {
+      "name": "improvement-case",
+      "description": "이력서·경력기술서용 \"문제 / 개선 사례\"를 작성·검산한다. 증상 → 계측 근거 → 개별 수정 + 재발 방지 구조 → 수치·구조적 효과 골격을 강제하고, 제목 공식·5블록(문제·원인·해결·측정·비고) 작성 규칙·문체 규칙·안티패턴·13항목 체크리스트를 적용해 \"작업 기록\"이 아닌 \"개선 사례\"로 만든다. 모르는 수치·측정 환경은 지어내지 않고 ✍️ 마커로 남겨 되묻는다.",
+      "category": "docs",
+      "version": "0.1.0",
+      "source": "./plugins/improvement-case"
     }
   ]
 }
