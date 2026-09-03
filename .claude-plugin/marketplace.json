@@ -1,6 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "padosol",
+  "version": "1.1.0",
   "description": "padosol의 Claude Code plugin marketplace.",
   "owner": { "name": "padosol", "email": "metapick.me@gmail.com" },
   "plugins": [
