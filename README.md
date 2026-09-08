@@ -20,3 +20,4 @@ padosol 의 Claude Code 플러그인 마켓플레이스.
 | `lol-patch-crawler` | LoL 공식 패치노트 크롤링 → docs/patch/{버전}.json 변환 |
 | `git-flow` | `/open-pr` + `/await-merge` 로 PR 생성·머지 대기·로컬 브랜치 정리까지 자동 (GitHub/GitLab 자동 감지) |
 | `improvement-case` | 이력서용 문제/개선 사례를 증상→계측→재발 방지→수치 골격으로 작성·검산 (13항목 체크리스트) |
+| `portfolio-case` | 포트폴리오 사례를 5블록(문제·원인·해결·측정·비고)으로 작성, 소제목 대응표로 논리 구멍 검출 (6문항 검산) |
