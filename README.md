@@ -15,9 +15,10 @@ padosol 의 Claude Code 플러그인 마켓플레이스.
 |---|---|
 | `orch` | tmux 멀티 워커 오케스트레이션 (leader/worker hub-and-spoke) ([repo](https://github.com/padosol/orchestration-plugin)) |
 | `ai-ready-audit` | git 리포를 AI-Ready 루브릭(100점·7카테고리)으로 감사, HTML 대시보드 + ROI 액션 리스트 산출 |
-| `safe-commit` | main/develop 직접 커밋 방지, MP-XXX kebab 브랜치 자동 생성, Created-By trailer 부착 |
+| `safe-commit` | main/develop 직접 커밋 방지, kebab 브랜치 자동 생성(이슈 키 없음), Created-By trailer 부착 |
 | `simplify-save` | 변경된 코드를 재사용성·품질·효율 관점으로 리뷰하고 보고서 저장 |
 | `lol-patch-crawler` | LoL 공식 패치노트 크롤링 → docs/patch/{버전}.json 변환 |
 | `git-flow` | `/open-pr` + `/await-merge` 로 PR 생성·머지 대기·로컬 브랜치 정리까지 자동 (GitHub/GitLab 자동 감지) |
+| `git-workflow` | `/commit` `/pr` `/merge-done` `/issue` — 무-트레일러 커밋, PR/MR 생성, 머지 후 정리, 이슈 발행 (GitHub/GitLab 자동 감지) |
 | `improvement-case` | 이력서용 문제/개선 사례를 증상→계측→재발 방지→수치 골격으로 작성·검산 (13항목 체크리스트) |
 | `portfolio-case` | 포트폴리오 문제해결 사례를 6블록(문제·원인·측정·해결·평가·비고)으로 작성, 소제목 대응표로 논리 구멍 검출 (6문항 검산) |
