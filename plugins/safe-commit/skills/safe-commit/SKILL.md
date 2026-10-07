@@ -1,7 +1,7 @@
 ---
 name: safe-commit
 description: |
-  main 또는 develop 브랜치에 직접 커밋되는 사고를 막고, 변경 내용을 분석해 프로젝트 브랜치 컨벤션 (type/MP-번호-kebab-설명) 에 맞는 새 브랜치를 자동 생성한 뒤 커밋한다. 모든 커밋 메시지에 `Created-By: Padosol` trailer 를 추가한다. 사용자가 "커밋해줘", "commit", "git commit", "변경 사항 저장" 등을 요청하면 반드시 이 스킬을 먼저 사용하고, 단순히 `git commit` Bash 를 즉시 실행하지 말 것. 특히 현재 브랜치가 보호된 브랜치(main/develop)일 때 반드시 트리거되어야 한다. Claude Code 의 commit-commands:commit 을 대체/확장하는 용도.
+  main 또는 develop 브랜치에 직접 커밋되는 사고를 막고, 변경 내용을 분석해 프로젝트 브랜치 컨벤션 (type/kebab-설명, 이슈 키 없음) 에 맞는 새 브랜치를 자동 생성한 뒤 커밋한다. 모든 커밋 메시지에 `Created-By: Padosol` trailer 를 추가한다. 사용자가 "커밋해줘", "commit", "git commit", "변경 사항 저장" 등을 요청하면 반드시 이 스킬을 먼저 사용하고, 단순히 `git commit` Bash 를 즉시 실행하지 말 것. 특히 현재 브랜치가 보호된 브랜치(main/develop)일 때 반드시 트리거되어야 한다. Claude Code 의 commit-commands:commit 을 대체/확장하는 용도.
 ---
 
 # safe-commit
@@ -10,7 +10,7 @@ description: |
 
 ## 왜 필요한가
 
-이 저장소는 `feature/MP-<번호>-<설명>` 같은 엄격한 브랜치 규칙을 쓰고 `develop`/`main`은 직접 푸시되지 않는다. 그런데 Claude가 `commit-commands:commit`처럼 "그냥 커밋" 흐름을 타면 현재 브랜치가 `develop`인데도 거기에 바로 커밋해 버려 정리 비용이 커진다. 이 스킬은 그걸 막고, 커밋 주체를 기록으로 남긴다.
+이 저장소는 `feature/<설명>` 같은 브랜치 규칙을 쓰고 `develop`/`main`은 직접 푸시되지 않는다. 그런데 Claude가 `commit-commands:commit`처럼 "그냥 커밋" 흐름을 타면 현재 브랜치가 `develop`인데도 거기에 바로 커밋해 버려 정리 비용이 커진다. 이 스킬은 그걸 막고, 커밋 주체를 기록으로 남긴다.
 
 ## 언제 트리거
 
@@ -80,10 +80,10 @@ git log --oneline -10
 #### 3-3. 브랜치명 조립
 
 ```
-<type>/MP-XXX-<kebab-설명>
+<type>/<kebab-설명>
 ```
 
-- 실제 Linear 이슈 번호는 이 자리에서 알 수 없으므로 `MP-XXX` **placeholder**를 쓴다. 커밋 후 사용자에게 rename을 안내한다(섹션 5).
+- **이슈 키(`MP-<번호>`)는 브랜치명에 넣지 않는다.** Linear 이슈 연결은 PR 본문의 `Closes MP-<번호>` / `Part of MP-<번호>` 에서 한다. 그래서 이슈 번호를 몰라도 브랜치를 만들 수 있고, 나중에 rename 할 일도 없다.
 - `feature` 사용 시 `feat`이 아니라 `feature`로 브랜치 prefix를 쓴다 (커밋 type은 `feat`, 브랜치 prefix는 `feature` — 이 프로젝트 컨벤션).
 
 | 커밋 type | 브랜치 prefix |
@@ -96,9 +96,11 @@ git log --oneline -10
 | `test`    | `test` |
 
 예시:
-- `feature/MP-XXX-duo-post-api`
-- `fix/MP-XXX-match-null-check`
-- `docs/MP-XXX-workflow-update`
+- `feature/duo-post-api`
+- `fix/match-null-check`
+- `docs/workflow-update`
+
+같은 이름의 브랜치가 이미 있으면(`git rev-parse --verify --quiet <이름>`) 설명을 한 단어 더 구체화한다.
 
 #### 3-4. 브랜치 체크아웃
 
@@ -116,7 +118,7 @@ git switch -c <새-브랜치명>
 
 #### 4-2. 커밋 메시지 포맷
 
-프로젝트 컨벤션: `<type>: MP-<번호> <한글 설명>`
+프로젝트 컨벤션: `<type>: <한글 설명>` — **이슈 키를 넣지 않는다** (Linear 는 커밋 메시지로 PR 을 연결하지 않는다. 연결은 PR 본문에서).
 
 - 제목 한 줄: 변경의 **왜(why)** 중심, 50자 내외.
 - (선택) 본문: 배경/이유 1~3줄.
@@ -125,7 +127,7 @@ git switch -c <새-브랜치명>
 좋은 포맷 예:
 
 ```
-feat: MP-XXX 듀오 게시글 생성 API 추가
+feat: 듀오 게시글 생성 API 추가
 
 Created-By: Padosol
 ```
@@ -133,7 +135,7 @@ Created-By: Padosol
 본문이 있는 경우:
 
 ```
-fix: MP-XXX 매치 조회 NPE 수정
+fix: 매치 조회 NPE 수정
 
 summonerId가 null인 경우 조회 로직이 NPE를 던지던 문제 방지.
 
@@ -146,7 +148,7 @@ Created-By: Padosol
 
 ```bash
 git commit -m "$(cat <<'EOF'
-feat: MP-XXX 듀오 게시글 생성 API 추가
+feat: 듀오 게시글 생성 API 추가
 
 Created-By: Padosol
 EOF
@@ -160,17 +162,8 @@ EOF
 보호 브랜치에서 시작해 새 브랜치를 만든 경우 반드시 다음을 요약해 사용자에게 알린다.
 
 1. 새로 만든 브랜치명과 커밋 요약(한 줄).
-2. Linear 이슈 번호 확인 후 브랜치/커밋 rename 방법:
-
-```bash
-# 브랜치 이름 교체
-git branch -m feature/MP-XXX-duo-post-api feature/MP-1-duo-post-api
-
-# 마지막 커밋 메시지 수정
-git commit --amend
-```
-
-3. 아직 push 전이라면 커밋 메시지 amend가 안전함, 이미 push 했다면 force-push 대신 새 커밋을 얹는 쪽이 안전함.
+2. Linear 이슈는 PR 을 만들 때 본문에 연결한다는 안내: `Closes MP-<번호>` (이슈 일부만 다루면 `Part of MP-<번호>`). 키만 적으면 연결되지 않는다.
+3. PR 을 연 뒤에는 브랜치를 rename 하지 않는다 — GitHub 이 PR 을 닫는다.
 
 ## 원칙
 
@@ -195,21 +188,21 @@ Modified: module/infra/api/src/main/resources/api-local.yml
 
 처리:
 1. 보호 브랜치 → 새 브랜치 필요.
-2. type = `feat`, kebab = `duo-post-api` → 브랜치 `feature/MP-XXX-duo-post-api`.
+2. type = `feat`, kebab = `duo-post-api` → 브랜치 `feature/duo-post-api`.
 3. 스테이징 3개 파일 명시 추가.
 4. 커밋:
    ```
-   feat: MP-XXX 듀오 게시글 생성 API 추가
+   feat: 듀오 게시글 생성 API 추가
 
    Created-By: Padosol
    ```
-5. 사용자에게 `MP-XXX` → 실제 번호로 rename 안내.
+5. 사용자에게 PR 본문에 `Closes MP-<번호>` 로 이슈를 연결하라고 안내.
 
 ### 예시 2: feature 브랜치에서 NPE 수정
 
 입력 상태:
 ```
-현재 브랜치: feature/MP-12-match-null-check
+현재 브랜치: feature/match-null-check
 Modified: MatchService.java
 ```
 
@@ -218,7 +211,7 @@ Modified: MatchService.java
 2. type = `fix`, 본문에 이유 한 줄.
 3. 커밋:
    ```
-   fix: MP-12 매치 조회 NPE 수정
+   fix: 매치 조회 NPE 수정
 
    summonerId null일 때 조회 로직이 NPE를 던지던 문제 방지.
 
@@ -235,10 +228,10 @@ Modified: docs/workflow.md
 
 처리:
 1. 보호 브랜치 → 새 브랜치 필요.
-2. type = `docs`, kebab = `workflow-update` → 브랜치 `docs/MP-XXX-workflow-update`.
+2. type = `docs`, kebab = `workflow-update` → 브랜치 `docs/workflow-update`.
 3. 커밋:
    ```
-   docs: MP-XXX 워크플로우 가이드 갱신
+   docs: 워크플로우 가이드 갱신
 
    Created-By: Padosol
    ```

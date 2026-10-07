@@ -21,9 +21,9 @@
     },
     {
       "name": "safe-commit",
-      "description": "main/develop 브랜치 직접 커밋 사고 방지, 변경 내용 분석 후 feat/fix/... + MP-XXX kebab 브랜치 자동 생성, Created-By: Padosol trailer 부착.",
+      "description": "main/develop 브랜치 직접 커밋 사고 방지, 변경 내용 분석 후 feat/fix/... + kebab 브랜치 자동 생성(이슈 키 없음), Created-By: Padosol trailer 부착.",
       "category": "workflow",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "source": "./plugins/safe-commit"
     },
     {
@@ -42,16 +42,16 @@
     },
     {
       "name": "git-flow",
-      "description": "PR/MR 라이프사이클 자동화 (GitHub + GitLab 지원). 각 스킬이 플랫폼을 자동 감지한 뒤 GITHUB_GUIDE.md / GITLAB_GUIDE.md 를 따른다. /open-pr 가 PR/MR 생성 + Linear MP 키 + Closes + 본문 템플릿(프로젝트 템플릿 우선, 없으면 GitHub=기능/리팩토링/버그픽스/기타 상황별 4종 자동 판단, GitLab=단일 mr.md 내장 템플릿)까지만 담당(자동 폴링·체인 없음), /post-review 가 코드 리뷰 보고서를 PR/MR 코멘트로 idempotent 게시, /merge-cleanup 이 웹 머지 후 수동 실행되는 머지정리 스킬(자동 트리거·폴링 없음)로 이미 머지된 PR/MR 을 1회 확인해 worktree teardown + 로컬 브랜치 삭제 + 타겟 브랜치 최신화 + 요약.",
+      "description": "PR/MR 라이프사이클 자동화 (GitHub + GitLab 지원). 각 스킬이 플랫폼을 자동 감지한 뒤 GITHUB_GUIDE.md / GITLAB_GUIDE.md 를 따른다. /open-pr 가 PR/MR 생성 + PR 본문 매직워드(Closes/Part of)로 Linear 이슈 연결(브랜치·커밋·제목엔 키 없음) + 본문 템플릿(프로젝트 템플릿 우선, 없으면 GitHub=기능/리팩토링/버그픽스/기타 상황별 4종 자동 판단, GitLab=단일 mr.md 내장 템플릿)까지만 담당(자동 폴링·체인 없음), /post-review 가 코드 리뷰 보고서를 PR/MR 코멘트로 idempotent 게시, /merge-cleanup 이 웹 머지 후 수동 실행되는 머지정리 스킬(자동 트리거·폴링 없음)로 이미 머지된 PR/MR 을 1회 확인해 worktree teardown + 로컬 브랜치 삭제 + 타겟 브랜치 최신화 + 요약.",
       "category": "workflow",
-      "version": "0.7.0",
+      "version": "0.8.0",
       "source": "./plugins/git-flow"
     },
     {
       "name": "git-workflow",
       "description": "커밋·PR/MR 생성·머지 후 정리·이슈 발행 스킬 모음 (GitHub + GitLab 양쪽 지원). 각 스킬이 GF_HOST > .orch/settings.json > gh/glab 인증 상태 순으로 플랫폼을 한 번 감지한 뒤 GITHUB_GUIDE.md / GITLAB_GUIDE.md 의 호스트별 명령을 따른다. /commit 이 diff 근거로 repo 컨벤션에 맞춰 커밋, /pr 이 현재 브랜치를 PR/MR 로 올리며(리포 템플릿 우선, 없으면 내장 template.md, 세션 요약 자동 작성), /merge-done 이 머지 확인 후 타겟 브랜치 최신화 + worktree·브랜치 정리, /issue 가 대화 내용을 이슈 템플릿에 담아 발행. 시간 추적(estimate/spend)은 이슈에만 기록하며 GitLab 에서만 동작한다. 커밋·PR/MR·이슈 어디에도 트레일러를 넣지 않는 무-트레일러 규약.",
       "category": "workflow",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "source": "./plugins/git-workflow"
     },
     {
